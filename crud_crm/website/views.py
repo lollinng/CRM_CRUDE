@@ -4,7 +4,7 @@ from django.contrib import messages
 
 from .models import Record
 
-from .forms import SignUpForm
+from .forms import SignUpForm,AddRecordForm
 
 # Create your views here.
 
@@ -75,3 +75,16 @@ def delete_record(request,pk):
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect('home')
+    
+def add_record(request):
+    form = AddRecordForm(request.POST or None)
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            if form.is_valid():
+                add_record = form.save()
+                messages.success(request,"Record Added...")
+                return redirect('home')
+        return render(request,"add_record.html",{'form':form})
+    else:
+        messages.success(request,"You Must Be Logged In To Do That...")
+        redirect('home')
